@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { HiChevronDown, HiCheckCircle, HiExclamationCircle, HiEye, HiTrash, HiDownload, HiPaperAirplane } from 'react-icons/hi2';
+import { HiChevronDown, HiCheckCircle, HiExclamationCircle, HiEye, HiTrash, HiArrowDownTray, HiPaperAirplane } from 'react-icons/hi2';
 import Link from 'next/link';
 
 export default function AdminReportsPage() {
