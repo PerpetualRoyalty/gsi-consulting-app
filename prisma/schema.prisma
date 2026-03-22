@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String?
+  role      UserRole @default(CLIENT)
+  company   String?
+  phone     String?
+  avatar    String?
+  stripeCustomerId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  agreements       Agreement[]        @relation("client")
+  payments         Payment[]          @relation("client")
+  sentMessages     Message[]          @relation("sender")
+  receivedMessages Message[]          @relation("receiver")
+  uploadedDocuments Document[]        @relation("uploadedBy")
+  sharedDocuments  Document[]         @relation("sharedWith")
+  onboardingLogs   OnboardingLog[]
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+}
+
+model Agreement {
+  id                String            @id @default(cuid())
+  title             String
+  description       String?
+  type              AgreementType     @default(PROJECT)
+  status            AgreementStatus   @default(DRAFT)
+  content           String?
+  retainerAmount    Float?
+  billingCycle      BillingCycle?
+  startDate         DateTime?
+  endDate           DateTime?
+  signedAt          DateTime?
+  signatureData     String?
+  clientId          String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  client   User      @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+  payments Payment[]
+  onboardingLogs OnboardingLog[]
+}
+
+enum AgreementType {
+  RETAINER
+  PROJECT
+  CUSTOM
+}
+
+enum AgreementStatus {
+  DRAFT
+  SENT
+  VIEWED
+  SIGNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  ONE_TIME
+}
+
+model Payment {
+  id                   String        @id @default(cuid())
+  amount               Float
+  status               PaymentStatus @default(PENDING)
+  type                 PaymentType
+  description          String?
+  stripePaymentIntentId String?
+  stripeInvoiceId      String?
+  agreementId          String
+  clientId             String
+  dueDate              DateTime?
+  paidAt               DateTime?
+  createdAt            DateTime      @default(now())
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  client    User     @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentType {
+  RETAINER
+  PROJECT
+  MILESTONE
+  CUSTOM
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  senderId    String
+  receiverId  String
+  threadId    String?
+  isRead      Boolean  @default(false)
+  attachments String?
+  createdAt   DateTime @default(now())
+
+  sender   User @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id            String           @id @default(cuid())
+  name          String
+  fileName      String
+  fileType      String
+  fileSize      Int
+  filePath      String
+  description   String?
+  category      DocumentCategory @default(OTHER)
+  uploadedById  String
+  sharedWithId  String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  uploadedBy User  @relation("uploadedBy", fields: [uploadedById], references: [id], onDelete: Cascade)
+  sharedWith User? @relation("sharedWith", fields: [sharedWithId], references: [id], onDelete: SetNull)
+}
+
+enum DocumentCategory {
+  AGREEMENT
+  INVOICE
+  REPORT
+  DELIVERABLE
+  OTHER
+}
+
+model OnboardingLog {
+  id          String            @id @default(cuid())
+  agreementId String
+  clientId    String
+  status      OnboardingStatus  @default(IN_PROGRESS)
+  steps       String            // JSON string of step results
+  triggeredAt DateTime          @default(now())
+  completedAt DateTime?
+
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  client    User      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+enum OnboardingStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
