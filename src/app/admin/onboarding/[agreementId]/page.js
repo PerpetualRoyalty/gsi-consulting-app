@@ -6,7 +6,7 @@ import {
   HiCheckCircle,
   HiExclamationTriangle,
   HiClock,
-  HiDownload,
+  HiArrowDownTray,
   HiEye,
   HiArrowPath,
   HiChevronLeft,
@@ -264,7 +264,7 @@ export default function OnboardingDetailPage() {
                       className="p-2 hover:bg-gray-200 rounded-lg transition"
                       title="Download Document"
                     >
-                      <HiDownload className="h-5 w-5 text-gray-600" />
+                      <HiArrowDownTray className="h-5 w-5 text-gray-600" />
                     </button>
                   </div>
                 </div>
