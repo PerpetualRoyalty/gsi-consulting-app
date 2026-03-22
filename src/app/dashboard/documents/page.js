@@ -6,7 +6,7 @@ import {
   HiArrowUpTray,
   HiDocument,
   HiDocumentText,
-  HiTable,
+  HiTableCells,
   HiChartBar,
   HiCheckBadge,
   HiEllipsisHorizontal,
@@ -92,7 +92,7 @@ export default function Documents() {
   const categories = [
     { id: 'all', label: 'All Documents', icon: HiDocument },
     { id: 'agreements', label: 'Agreements', icon: HiDocumentText },
-    { id: 'invoices', label: 'Invoices', icon: HiTable },
+    { id: 'invoices', label: 'Invoices', icon: HiTableCells },
     { id: 'reports', label: 'Reports', icon: HiChartBar },
     { id: 'deliverables', label: 'Deliverables', icon: HiCheckBadge },
   ];
@@ -107,7 +107,7 @@ export default function Documents() {
       case 'pdf':
         return <HiDocument className="w-5 h-5 text-red-600" />;
       case 'xlsx':
-        return <HiTable className="w-5 h-5 text-green-600" />;
+        return <HiTableCells className="w-5 h-5 text-green-600" />;
       case 'pptx':
         return <HiChartBar className="w-5 h-5 text-orange-600" />;
       default:
