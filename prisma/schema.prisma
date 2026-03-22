@@ -42,7 +42,7 @@ model User {
   email     String   @unique
   name      String
   password  String?
-  role      UserRole @default(CLIENT)
+  role      String   @default("CLIENT")
   company   String?
   phone     String?
   avatar    String?
@@ -61,20 +61,15 @@ model User {
   onboardingLogs   OnboardingLog[]
 }
 
-enum UserRole {
-  ADMIN
-  CLIENT
-}
-
 model Agreement {
   id                String            @id @default(cuid())
   title             String
   description       String?
-  type              AgreementType     @default(PROJECT)
-  status            AgreementStatus   @default(DRAFT)
+  type              String            @default("PROJECT")
+  status            String            @default("DRAFT")
   content           String?
   retainerAmount    Float?
-  billingCycle      BillingCycle?
+  billingCycle      String?
   startDate         DateTime?
   endDate           DateTime?
   signedAt          DateTime?
@@ -88,34 +83,11 @@ model Agreement {
   onboardingLogs OnboardingLog[]
 }
 
-enum AgreementType {
-  RETAINER
-  PROJECT
-  CUSTOM
-}
-
-enum AgreementStatus {
-  DRAFT
-  SENT
-  VIEWED
-  SIGNED
-  ACTIVE
-  COMPLETED
-  CANCELLED
-}
-
-enum BillingCycle {
-  MONTHLY
-  QUARTERLY
-  ANNUAL
-  ONE_TIME
-}
-
 model Payment {
   id                   String        @id @default(cuid())
   amount               Float
-  status               PaymentStatus @default(PENDING)
-  type                 PaymentType
+  status               String        @default("PENDING")
+  type                 String
   description          String?
   stripePaymentIntentId String?
   stripeInvoiceId      String?
@@ -127,21 +99,6 @@ model Payment {
 
   agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
   client    User     @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
-}
-
-enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum PaymentType {
-  RETAINER
-  PROJECT
-  MILESTONE
-  CUSTOM
 }
 
 model Message {
@@ -166,7 +123,7 @@ model Document {
   fileSize      Int
   filePath      String
   description   String?
-  category      DocumentCategory @default(OTHER)
+  category      String           @default("OTHER")
   uploadedById  String
   sharedWithId  String?
   createdAt     DateTime         @default(now())
@@ -176,30 +133,15 @@ model Document {
   sharedWith User? @relation("sharedWith", fields: [sharedWithId], references: [id], onDelete: SetNull)
 }
 
-enum DocumentCategory {
-  AGREEMENT
-  INVOICE
-  REPORT
-  DELIVERABLE
-  OTHER
-}
-
 model OnboardingLog {
   id          String            @id @default(cuid())
   agreementId String
   clientId    String
-  status      OnboardingStatus  @default(IN_PROGRESS)
+  status      String            @default("IN_PROGRESS")
   steps       String            // JSON string of step results
   triggeredAt DateTime          @default(now())
   completedAt DateTime?
 
   agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
   client    User      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-}
-
-enum OnboardingStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  FAILED
 }
