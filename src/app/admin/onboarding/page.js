@@ -248,7 +248,7 @@ function StatCard({ label, value, icon, color }) {
           <p className="text-gray-600 text-sm font-medium">{label}</p>
           <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
         </div>
-        <div style={{ color }}} className="opacity-20">
+        <div style={{ color }} className="opacity-20">
           {icon}
         </div>
       </div>
