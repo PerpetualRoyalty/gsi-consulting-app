@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { HiArrowLeft, HiDownload, HiPaperAirplane, HiPrinter } from 'react-icons/hi2';
+import { HiArrowLeft, HiArrowDownTray, HiPaperAirplane, HiPrinter } from 'react-icons/hi2';
 
 export default function ReportViewerPage() {
   const router = useRouter();
@@ -105,7 +105,7 @@ export default function ReportViewerPage() {
             style={{ ...styles.toolbarButton, ...styles.primary }}
             title="Download PDF"
           >
-            <HiDownload size={18} />
+            <HiArrowDownTray size={18} />
             Download PDF
           </button>
           <button
